@@ -5,6 +5,8 @@
 
 #Version 0.1 - Created the Harry Class that allows the character to move harry left right and down.
 #Gravity affects Harry  Using old images for assignment 4.
+#Version 0.2 - Created the Quaffle Class, One quaffle spawns from the right side and will fly up or straight.
+#If it hits the left side or top of the screen they reset.
 
 
 import pygame, random, sys
@@ -94,6 +96,37 @@ class Harry(pygame.sprite.Sprite):
     #end of fly method              
 #end of the harry class
 
+#class Quaffle creates a quaffle sprite
+class Quaffle(pygame.sprite.Sprite):
+    #method that initializes the quaffle sprite
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load("flying_bird.gif")
+        self.image = self.image.convert()
+        self.rect = self.image.get_rect()
+        self.reset()
+    #end of __init__ method
+
+    #method that updates the quaffle sprite
+    def update(self):
+        self.rect.centerx -= self.dx
+        self.rect.centery += self.dy
+        #if the quaffle sprite hits the top of the screen or passes the left side of the screen run the reset method
+        if self.rect.top > screen.get_height() or self.rect.bottom < 0 or self.rect.right < 0:
+            self.reset()       
+    #end of update method
+    
+    #method reset the quaffle sprite
+    def reset(self):
+        #randomly select the height the quaffle will be spawn from
+        randomy = random.randint(0, 460)
+        self.rect.center = (640, randomy)
+        #set the speeds for the quaffle
+        self.dx = random.randrange(12, 15)
+        self.dy = random.randrange(-3, 0)
+    #end of reset method
+#end of Quaffle class
+
 #game method runs the game
 def game():
     pygame.display.set_caption("Quidditch.py - Game On")
@@ -103,9 +136,10 @@ def game():
     screen.blit(background, (0, 0))
     #create variables for the sprite classes
     harry = Harry()
+    quaffle = Quaffle()
     
-    #store the sprite variables 
-    goodSprites = pygame.sprite.OrderedUpdates(harry)
+    #store the sprite variables
+    goodSprites = pygame.sprite.OrderedUpdates(harry, quaffle)
     #set the fps
     clock = pygame.time.Clock()
     keepGoing = True
